@@ -1,16 +1,18 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <DailyLog />
 </template>
 
 <script>
-// import boostrap javascript
-import HelloWorld from './components/HelloWorld.vue'
+// import boostrap javascript -- Jing
+import 'bootstrap/dist/js/bootstrap.js';
+// import components starting from here -- Jing
+//import HelloWorld from './components/HelloWorld.vue'
+import DailyLog from './components/DailyLog.vue'
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    DailyLog
   }
 }
 </script>
