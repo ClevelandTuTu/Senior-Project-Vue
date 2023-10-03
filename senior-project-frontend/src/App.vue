@@ -1,4 +1,5 @@
 <template>
+  <NavigationBar />
   <DailyLog />
 </template>
 
@@ -8,11 +9,13 @@ import 'bootstrap/dist/js/bootstrap.js';
 // import components starting from here -- Jing
 //import HelloWorld from './components/HelloWorld.vue'
 import DailyLog from './components/DailyLog.vue'
+import NavigationBar from './components/NavigationBar.vue';
 
 export default {
   name: 'App',
   components: {
-    DailyLog
+    DailyLog,
+    NavigationBar
   }
 }
 </script>

@@ -1,5 +1,5 @@
 <template>
-    <div class="container">
+    <div class="container-fluid">
             <form id="dailyQuiz">
                 
                 <div class="accordion" id="dailyLog">
