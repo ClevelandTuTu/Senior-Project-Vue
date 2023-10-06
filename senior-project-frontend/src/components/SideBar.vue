@@ -1,11 +1,11 @@
 <template>
     <hr>
-    <div class="d-flex flex-column flex-shrink-0 p-3 text-white bg-light" id="Sidebar">
-        <ul class="nav nav-pills flex-column mb-auto">
-            <li class="nav-item">
+    <div class="d-flex flex-column flex-shrink-0 p-3 text-whitebg-light" id="Sidebar">
+        <ul class="nav  flex-column mb-auto">
+            <li class="nav-item" @click="swtichToDailyLog()">
                 <a class="nav-link active" href="#">DailyLog</a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item" @click="switchToRecord()">
                 <a class="nav-link" href="#">Record</a>
             </li>
             <li class="nav-item">
@@ -13,11 +13,20 @@
             </li>
         </ul>
     </div>
-    <hr>
 </template>
 
-<style scoped>
-#Sidebar {
-    width: 200px;
+<script>
+
+export default {
+    emits: ['openRecord', 'openDailyLog'],
+    methods: {
+        switchToRecord() {
+            this.$emit('openRecord')
+        },
+        swtichToDailyLog() {
+            this.$emit('openDailyLog')
+        }
+    }
 }
-</style>
+
+</script>

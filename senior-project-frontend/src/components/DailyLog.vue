@@ -1,7 +1,7 @@
 <template>
     <div class="container-fluid">
             <form id="dailyQuiz">
-                {{ Mood }}
+                {{ mood }}
                 {{ Entertainments }}
                 {{ Diary }}
                 {{ date }}
@@ -229,7 +229,7 @@ export default {
     data() {
         return {
             date: null,
-            mood: '',
+            mood: 'TBD',
             Entertainments: { classes: false, tests: false, quizes: false, assignments: false, projects: false, party: false, boardGames: false,
                 outdoorPicnic: false, movies: false, concert: false, traveling: false, volunteerActivities: false, gaming: false, 
                 gastronomic: false, reading: false, basketBall: false, soccer: false, football: false, tennis: false, swimming: false,
