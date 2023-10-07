@@ -25,7 +25,7 @@ export default {
     },
     data() {
         return {
-            show: 'dailyLog'
+            show: 'dailyLogRecord'
         }
     },
     methods: {
