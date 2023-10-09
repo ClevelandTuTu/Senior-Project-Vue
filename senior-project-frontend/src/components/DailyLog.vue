@@ -228,7 +228,7 @@ export default {
     data() {
         return {
             log: {
-                date: null,
+                date: '',
                 mood: 'TBD',
                 Entertainments: { classes: false, tests: false, quizes: false, assignments: false, projects: false, party: false, boardGames: false,
                     outdoorPicnic: false, movies: false, concert: false, traveling: false, volunteerActivities: false, gaming: false, 
