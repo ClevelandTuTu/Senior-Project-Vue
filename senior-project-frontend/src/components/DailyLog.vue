@@ -1,14 +1,22 @@
 <template>
     <div class="container-fluid">
-            <form id="dailyQuiz">
+            <form id="dailyQuiz" class="needs-validation" novalidate>
                 {{ log.date }}
 
                 
                 <div class="title">
                     <h4>Please choose the date you want to record for:</h4>
                 </div>
-                <div class="col-3">
-                    <VueDatePicker v-model="log.date" :max-date="new Date()" :enable-time-picker="true" />
+                <div class="row">
+                    <div class="col-3">
+                        <VueDatePicker v-model="log.date" :max-date="new Date()" :enable-time-picker="true" 
+                        :language="datepickerLanguage" :format="datepickerFormat" required/>
+                    </div>
+                    <div class="col-9">
+                        <div v-if="!log.date" class="error-text">
+                            Please choose a date!
+                        </div>
+                    </div>
                 </div>
                 
                 <hr>
@@ -206,7 +214,7 @@
                     <hr>
                     <div class="row">
                         <div class="col-10"></div>
-                        <button type="button" class="btn btn-success col-2" @click="sendToRecord()">Save</button>
+                        <button class="btn btn-success col-2" @click="startSubmission()">Submit</button>
                     </div>
                     <br>
                     
@@ -214,12 +222,19 @@
                 </div>
             </form>
         </div>
+        <div class="toast align-items-center text-white bg-primary border-0" role="alert" aria-live="assertive" aria-atomic="true" ref="toast">
+            <div class="d-flex">
+                <div class="toast-body">
+                Hello, world! This is a toast message.
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
 </template>
 
 <script>
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css'
-import { ref } from 'vue';
 
 export default {
     name: 'DailyLog',
@@ -229,20 +244,63 @@ export default {
         return {
             log: {
                 date: '',
-                mood: 'TBD',
+                mood: '',
                 Entertainments: { classes: false, tests: false, quizes: false, assignments: false, projects: false, party: false, boardGames: false,
                     outdoorPicnic: false, movies: false, concert: false, traveling: false, volunteerActivities: false, gaming: false, 
                     gastronomic: false, reading: false, basketBall: false, soccer: false, football: false, tennis: false, swimming: false,
                     baseball: false, golf: false, trackAndField: false, cycling: false, weightTraining: false },
                 Diary: { title: '', content: '' }
             },
-            date: ref(new Date())
+            datepickerLanguage: 'en',
+            datepickerFormat: 'yyyy/MM/dd HH:mm'
         }
     },
     methods: {
         sendToRecord() {
-            console.log(this.log)
-            this.$emit('transmitDailyLog', this.log)
+            const date = this.log.date;
+            const mood = this.log.mood;
+            const Entertainments = JSON.parse(JSON.stringify(this.log.Entertainments));
+            const Diary = JSON.parse(JSON.stringify(this.log.Diary));
+            const copyLog = {
+                date: date,
+                mood: mood,
+                Entertainments: Entertainments,
+                Diary: Diary
+                };
+            this.$emit('transmitDailyLog', copyLog)
+
+            
+        },
+        haveRequiredInputs() {
+            // currently just checking is date and mood is selected
+            if (!this.log.date || !this.log.mood) {
+                console.log("At least one of date or mood is falsy.");
+                alert("Please fill in date and mood before submission")
+                return false;
+            }
+            else {
+                console.log(2);
+                return true;
+            }
+        },
+        startSubmission() {
+            // check required inputs
+            if (this.haveRequiredInputs()) {
+                this.sendToRecord();
+                this.resetAllFields();
+            }
+            else {
+                console.log('empty required inputs');
+            }
+        },
+        resetAllFields() {
+            this.log.date = '';
+            this.log.mood = ''
+            for (const key of Object.keys(this.log.Entertainments)) {
+                this.log.Entertainments[key] = false;
+            }
+            this.log.Diary.title = '';
+            this.log.Diary.content = '';
         }
     }
 }
@@ -254,5 +312,10 @@ export default {
 }
 .title {
     font-weight: bold;
+}
+.error-text {
+    color: red;
+    font-style: italic;
+    font-size: 20px;
 }
 </style>

@@ -34,7 +34,7 @@
         </button>
 
         <!-- Modal -->
-        <div class="modal fade" id="dailyLog" data-bs-keyboard="false" tabindex="-1" aria-labelledby="dailyLog" aria-hidden="true">
+        <div class="modal fade" id="dailyLog" data-bs-keyboard="false" data-bs-backdrop="static" tabindex="-1" aria-labelledby="dailyLog" aria-hidden="true" ref="modal">
             <div class="modal-dialog modal-xl">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -45,7 +45,7 @@
                         <DailyLog @transmitDailyLog="receiveDailyLog" />
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" ref="closeButton">Close</button>
                     </div>
                 </div>
             </div>
@@ -85,14 +85,15 @@ export default ({
                     }
                 }
             ],
-            receivedLog: null
+            receivedLog: null,
+            modalOpen: false
         }
     },
     methods: {
         receiveDailyLog(dailyLog) {
             this.receivedLog = dailyLog;
             this.records.unshift({log: this.receivedLog})
-            console.log(this.records)
+            this.$refs.closeButton.click()
         }
     }
 })
