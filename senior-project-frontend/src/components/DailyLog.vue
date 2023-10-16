@@ -9,7 +9,7 @@
                 </div>
                 <div class="row">
                     <div class="col-3">
-                        <VueDatePicker v-model="log.date" :max-date="new Date()" :enable-time-picker="true" 
+                        <VueDatePicker @click="updateDate" v-model="log.date" :max-date="maxDate" :enable-time-picker="true" 
                         :language="datepickerLanguage" :format="datepickerFormat" required/>
                     </div>
                     <div class="col-9">
@@ -21,7 +21,7 @@
                 
                 <hr>
                 
-                <div class="accordion" id="dailyLog">
+                <div class="accordion" id="dailyLog" ref="myAccordion">
                     <div class="accordion-item" id="moodLog">
                         <h2 class="accordion-header" id="moodQuiz-heading">
                             <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
@@ -60,11 +60,11 @@
                     </div>
                     <div class="accordion-item" id="sportsQuiz-heading">
                         <h2 class="accordion-header" id="sportsQuiz-heading">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseTwo" aria-expanded="false" aria-controls="panelsStayOpen-collapseTwo">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#ActivityBody" aria-expanded="false" aria-controls="ActivityBody">
                             Activities
                             </button>
                         </h2>
-                        <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingTwo">
+                        <div id="ActivityBody" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingTwo" ref="ActSection">
                             <div class="accordion-body">
                                 <h4>What did you do today?</h4>
                                 <br>
@@ -222,19 +222,12 @@
                 </div>
             </form>
         </div>
-        <div class="toast align-items-center text-white bg-primary border-0" role="alert" aria-live="assertive" aria-atomic="true" ref="toast">
-            <div class="d-flex">
-                <div class="toast-body">
-                Hello, world! This is a toast message.
-                </div>
-                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-        </div>
 </template>
 
 <script>
 import VueDatePicker from '@vuepic/vue-datepicker';
-import '@vuepic/vue-datepicker/dist/main.css'
+import '@vuepic/vue-datepicker/dist/main.css';
+//import { Collapse } from 'bootstrap';
 
 export default {
     name: 'DailyLog',
@@ -252,8 +245,24 @@ export default {
                 Diary: { title: '', content: '' }
             },
             datepickerLanguage: 'en',
-            datepickerFormat: 'yyyy/MM/dd HH:mm'
+            datepickerFormat: 'yyyy/MM/dd HH:mm',
+            maxDate: new Date()
         }
+    },
+    beforeMount() {
+        this.log.date = '';
+        this.log.mood = ''
+        for (const key of Object.keys(this.log.Entertainments)) {
+            this.log.Entertainments[key] = false;
+        }
+        this.log.Diary.title = '';
+        this.log.Diary.content = '';
+
+        console.log(1);
+    },
+    mounted() {
+        //new Collapse(this.$refs.myAccordion);
+        this.maxDate = new Date();
     },
     methods: {
         sendToRecord() {
@@ -287,7 +296,7 @@ export default {
             // check required inputs
             if (this.haveRequiredInputs()) {
                 this.sendToRecord();
-                this.resetAllFields();
+                // this.resetAllFields();
             }
             else {
                 console.log('empty required inputs');
@@ -301,6 +310,9 @@ export default {
             }
             this.log.Diary.title = '';
             this.log.Diary.content = '';
+        },
+        updateDate() {
+            this.maxDate = new Date();
         }
     }
 }

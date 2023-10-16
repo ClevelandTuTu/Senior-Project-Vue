@@ -29,7 +29,7 @@
     <div class="row">
         <div class="col-10"></div>
         <!-- Button trigger modal -->
-        <button type="button" class="btn btn-primary col-2" data-bs-toggle="modal" data-bs-target="#dailyLog">
+        <button @click="handleClick()" type="button" class="btn btn-primary col-2" data-bs-toggle="modal" data-bs-target="#dailyLog">
             New DailyLog
         </button>
 
@@ -42,7 +42,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <DailyLog @transmitDailyLog="receiveDailyLog" />
+                        <DailyLog @transmitDailyLog="receiveDailyLog" ref="dailyLogRef" />
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" ref="closeButton">Close</button>
@@ -94,6 +94,9 @@ export default ({
             this.receivedLog = dailyLog;
             this.records.unshift({log: this.receivedLog})
             this.$refs.closeButton.click()
+        },
+        handleClick() {
+            this.$refs.dailyLogRef.updateDate();
         }
     }
 })

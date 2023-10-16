@@ -1,6 +1,11 @@
 <template>
-  <NavigationBar />
-  <LogModule />
+    <div>
+        <!--
+        <router-link to="/login">Go to Login</router-link>
+        <router-link to="/main">Go to Main Page</router-link>
+        -->
+        <router-view></router-view>
+    </div>
 </template>
 
 <script>
@@ -8,15 +13,9 @@
 import 'bootstrap/dist/js/bootstrap.js';
 // import components starting from here -- Jing
 //import HelloWorld from './components/HelloWorld.vue'
-import LogModule from './components/LogModule.vue';
-import NavigationBar from './components/NavigationBar.vue';
 
 export default {
-  name: 'App',
-  components: {
-    LogModule,
-    NavigationBar
-  }
+  name: 'App'
 }
 </script>
 
@@ -29,6 +28,6 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  /*margin-top: 60px;*/
 }
 </style>
