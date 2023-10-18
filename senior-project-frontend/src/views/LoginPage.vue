@@ -29,7 +29,8 @@ export default {
         return {
             user: {
                 email: '',
-                password: ''
+                password: '',
+                connection: null
             }
         }
     },
