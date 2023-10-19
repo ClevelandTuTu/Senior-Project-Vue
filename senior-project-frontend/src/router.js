@@ -6,7 +6,8 @@ import RegisterPage from './views/RegisterPage.vue';
 import ChatroomPage from './views/ChatroomPage.vue';
 import SpinTheWheelPage from './views/SpinTheWheelPage.vue';
 import ColoringBook from './views/ColoringBookPage.vue';
-import GameSelection from './views/GameSelection.vue'
+import GameSelection from './views/GameSelection.vue';
+import NewDailyLogPage from './views/NewDailyLogPage.vue';
 
 const router = createRouter({
   history: createWebHistory(),
@@ -18,6 +19,7 @@ const router = createRouter({
     { path: '/spinthewheel', name: 'spinthewheel', component: SpinTheWheelPage },
     { path: '/coloringbook', name: 'coloringbook', component: ColoringBook },
     { path: '/gameselection', name: 'gameselection', component: GameSelection },
+    { path: '/newdailylog', name: 'newdailylog', component: NewDailyLogPage },
   ],
 });
 

@@ -1,39 +1,45 @@
 <template>
-    <h2>Here is your past record:</h2>
     <br>
 
-    <table class="table table-responsive">
+    <table class="table table-responsive recordTable">
         <thead>
             <tr>
                 <th class="col-3 tableTitle">Date</th>
-                <th class="col-3 tableTitle">Mood</th>
-                <th class="col-6 tableTitle">Activities</th>
+                <th class="col-2 tableTitle">Mood</th>
+                <th class="col-2 tableTitle">Activities</th>
+                <th class="col-5 tableTitle">Journal</th>
             </tr>
         </thead>
         <tbody>
-            <tr v-for="item in records" :key="item.log.date">
-                <td class="tableTitle"> {{ item.log.date }}</td>
-                <td class="tableTitle"> {{ item.log.mood }}</td>
+            <tr v-for="item in records" :key="item.date">
+                <td class="tableTitle"> {{ item.date }}</td>
+                <td class="tableTitle"> 
+                    <span v-if="item.mood === 0">Super Bad</span>
+                    <span v-else-if="item.mood === 1">Bad</span>
+                    <span v-else-if="item.mood === 2">Not Bad</span>
+                    <span v-else-if="item.mood === 3">Great</span>
+                    <span v-else-if="item.mood === 4">Super Great</span>    
+                </td>
                 <td class="activity">
-                    <div v-for="(value, key) in item.log.Entertainments" :key="key">
-                        <div v-if="value">
-                            {{ key }}
-                        </div>
+                    <div v-for="(act, index) in item.activity" :key="index">
+                            {{ act }}
                     </div>
+                </td>
+                <td class="activity">
+                    {{ item.journal }}
                 </td>
             </tr>
         </tbody>
     </table>
     
 
+    <!--
     <div class="row">
         <div class="col-10"></div>
-        <!-- Button trigger modal -->
         <button @click="handleClick()" type="button" class="btn btn-primary col-2" data-bs-toggle="modal" data-bs-target="#dailyLog">
             New DailyLog
         </button>
 
-        <!-- Modal -->
         <div class="modal fade" id="dailyLog" data-bs-keyboard="false" data-bs-backdrop="static" tabindex="-1" aria-labelledby="dailyLog" aria-hidden="true" ref="modal">
             <div class="modal-dialog modal-xl">
                 <div class="modal-content">
@@ -51,58 +57,69 @@
             </div>
         </div>
     </div>
+    -->
 
 </template>
 
 <script>
-import DailyLog from './DailyLog.vue';
+//import DailyLog from './DailyLog.vue';
+import axios from 'axios';
 
 export default ({
-    components: {DailyLog},
+    //components: {DailyLog},
     data() {
         return {
             records: [
-                {
-                    log: {
-                        date: 'Tue Oct 03 2023 00:30:00 GMT-0400 (北美东部夏令时间)',
-                        mood: 'Super Great',
-                        Entertainments: { classes: true, tests: false, quizes: false, assignments: true, projects: false, party: false, boardGames: false,
-                            outdoorPicnic: false, movies: true, concert: false, traveling: false, volunteerActivities: false, gaming: true, 
-                            gastronomic: true, reading: false, basketBall: false, soccer: false, football: false, tennis: false, swimming: false,
-                            baseball: false, golf: false, trackAndField: false, cycling: false, weightTraining: false },
-                        Diary: { title: 'hihihi', content: '1111111111' }
-                    }
-                },
-                {
-                    log: {
-                        date: 'Wed Oct 04 2023 13:34:00 GMT-0400 (北美东部夏令时间)',
-                        mood: 'Super Bad',
-                        Entertainments: { classes: false, tests: true, quizes: false, assignments: false, projects: false, party: false, boardGames: false,
-                            outdoorPicnic: true, movies: false, concert: false, traveling: false, volunteerActivities: false, gaming: true, 
-                            gastronomic: false, reading: true, basketBall: false, soccer: false, football: false, tennis: false, swimming: false,
-                            baseball: false, golf: false, trackAndField: false, cycling: false, weightTraining: true },
-                        Diary: { title: 'hellohellohello', content: '22222222222' }
-                    }
-                }
+                
             ],
             receivedLog: null,
             modalOpen: false
         }
     },
+    mounted() {
+        this.retriveRecords();
+    },
     methods: {
+        /*
         receiveDailyLog(dailyLog) {
             this.receivedLog = dailyLog;
             this.records.unshift({log: this.receivedLog})
             this.$refs.closeButton.click()
         },
-        handleClick() {
-            this.$refs.dailyLogRef.updateDate();
+        */
+        retriveRecords() {
+            const userLoginData = localStorage.getItem("user_login");
+            const userData = JSON.parse(userLoginData);
+            const userID = userData.email; // don't forget to change this to ID if database changes
+            const request = 'http://localhost:8080/entry/selectEntries/' + userID
+            axios.get(request).then(res => {
+                const entriesRetrived = res.data
+                console.log(res.data)
+                entriesRetrived.forEach(entry => {
+                    const log = {
+                        date: entry.entryDate,
+                        mood: entry.mood,
+                        activity: entry.activities.split(',').filter(element => element.trim() !== ''),
+                        journal: entry.journal
+                    }
+                    console.log(log)
+                    this.records.push(log)
+                    console.log(this.records)
+                    
+                });
+            })
+            .catch(error => {
+                console.log(error)
+            })
         }
     }
 })
 </script>
 
 <style scoped>
+.recordTable {
+    text-align: center;
+}
 .tableTitle {
     font-size: 1.5em;
 }

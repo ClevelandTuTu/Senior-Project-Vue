@@ -1,19 +1,12 @@
 <template>
-    <hr>
-    <div class="d-flex flex-column flex-shrink-0 p-3 text-whitebg-light" id="Sidebar">
-        <ul class="nav  flex-column mb-auto">
-            <!--
-            <li class="nav-item" @click="swtichToDailyLog()">
-                <a class="nav-link active" href="#">DailyLog</a>
-            </li>
-            -->
-            <li class="nav-item" @click="switchToRecord()">
-                <a class="nav-link" href="#">Record</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">Analysis</a>
-            </li>
-        </ul>
+    <div @click="switchToRecord">
+        <a href="#">Record</a>
+    </div>
+    <div @click="swtichToDailyLog">
+        <a href="#">New DailyLog</a>
+    </div>
+    <div>
+        <a href="#">Analysis (in progress)</a>
     </div>
 </template>
 
@@ -23,12 +16,31 @@ export default {
     emits: ['openRecord', 'openDailyLog'],
     methods: {
         switchToRecord() {
-            this.$emit('openRecord')
+            this.$router.push("./main")
         },
         swtichToDailyLog() {
-            this.$emit('openDailyLog')
+            this.$router.push("./newdailylog")
         }
     }
 }
 
 </script>
+
+<style scoped>
+a {
+    display: block;
+    width: 200px;
+    height: 50px;
+    line-height: 50px;
+    background-color: rgba(255, 255, 255, 0.7);
+    font-size: 14px;
+    color: #000000;
+    padding-left: 30px;
+    text-decoration: none;
+    text-indent: 2em;
+
+}
+a:hover {
+    background-color: #ddd;
+}
+</style>
