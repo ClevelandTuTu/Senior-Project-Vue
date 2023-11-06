@@ -61,13 +61,13 @@
     <div class="test">
         <el-calendar v-model="selectedDay">
         <template #header="{ date }">
-            <span style="font-weight: bold;">{{ date }}</span>
+            <span style="font-weight: bold; font-size: 30px;">{{ date }}</span>
             <el-button-group>
-                <el-button size="large" @click="selectDate('prev-month')" :icon="ArrowLeft">
+                <el-button type="primary" size="large" @click="selectDate('prev-month')" :icon="ArrowLeft">
                 <ArrowLeft />Previous Month
                 </el-button>
-                <el-button size="large" @click="selectDate('today')">Today</el-button>
-                <el-button size="large" @click="selectDate('next-month')">
+                <el-button type="primary" size="large" @click="selectDate('today')">Today</el-button>
+                <el-button type="primary" size="large" @click="selectDate('next-month')">
                 Next Month
                 </el-button>
             </el-button-group>
@@ -100,6 +100,11 @@
         </template>
     </el-calendar>
     </div>
+
+    <hr>
+    <el-button type="primary" size="large">
+        New Log
+    </el-button>
 
 </template>
 
