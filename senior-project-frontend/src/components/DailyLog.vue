@@ -1,20 +1,22 @@
 <template>
+    {{ date }}
     <div class="container-fluid">
-            <form id="dailyQuiz" class="needs-validation" @submit="submitForm">
+            <form id="dailyQuiz" class="needs-validation" @submit="submitForm" ref="logForm">
 
                 <div class="title">
-                    <h4>Please choose the date you want to record for:</h4>
-                </div>
-                <div class="row">
-                    <div class="col-3">
-                        <VueDatePicker @click="updateDate" v-model="date" :max-date="maxDate" :enable-time-picker="false" 
-                        :language="datepickerLanguage" :format="datepickerFormat" required/>
+                    <div class="col-12">
+                        <!--<VueDatePicker @click="updateDate" v-model="date" :max-date="maxDate" :enable-time-picker="false" 
+                        :language="datepickerLanguage" :format="datepickerFormat" :readonly="false" required/>-->
+                        <h5>Date:</h5>
+                        {{ date }}
                     </div>
+                    <!--
                     <div class="col-9">
                         <div v-if="!date" class="error-text">
                             Please choose a date!
                         </div>
                     </div>
+                    -->
                 </div>
                 
                 <hr>
@@ -32,23 +34,23 @@
                                 <div class="row">
                                     <div class="col">
                                         <i class="fa-solid fa-face-grin-stars"></i>
-                                        <input type="radio" v-model="mood" value="Super Great" class="btn-check" name="mood" id="mood1" autocomplete="off">
+                                        <input type="radio" v-model="mood" value="4" class="btn-check" name="mood" id="mood1" autocomplete="off">
                                         <label class="btn btn-outline-primary" for="mood1">Super Great</label>
                                     </div>
                                     <div class="col">
-                                        <input type="radio" v-model="mood" value="Great" class="btn-check" name="mood" id="mood2" autocomplete="off">
+                                        <input type="radio" v-model="mood" value="3" class="btn-check" name="mood" id="mood2" autocomplete="off">
                                         <label class="btn btn-outline-info" for="mood2">Great</label>
                                     </div>
                                     <div class="col">
-                                        <input type="radio" v-model="mood" value="So So" class="btn-check" name="mood" id="mood3" autocomplete="off">
+                                        <input type="radio" v-model="mood" value="2" class="btn-check" name="mood" id="mood3" autocomplete="off">
                                         <label class="btn btn-outline-warning" for="mood3">Not Bad</label>
                                     </div>
                                     <div class="col">
-                                        <input type="radio" v-model="mood" value="Bad" class="btn-check" name="mood" id="mood4" autocomplete="off">
+                                        <input type="radio" v-model="mood" value="1" class="btn-check" name="mood" id="mood4" autocomplete="off">
                                         <label class="btn btn-outline-dark" for="mood4">Bad</label>
                                     </div>
                                     <div class="col">
-                                        <input type="radio" v-model="mood" value="Super Bad" class="btn-check" name="mood" id="mood5" autocomplete="off">
+                                        <input type="radio" v-model="mood" value="0" class="btn-check" name="mood" id="mood5" autocomplete="off">
                                         <label class="btn btn-outline-danger" for="mood5">Super Bad</label>
                                     </div>
                                 </div>
@@ -223,14 +225,20 @@
 </template>
 
 <script>
-import VueDatePicker from '@vuepic/vue-datepicker';
+//import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';
 import axios from 'axios';
 
 export default {
     name: 'DailyLog',
-    components: { VueDatePicker },
-    emits: ['transmitDailyLog'],
+    //components: { VueDatePicker },
+    props: {
+        dateInherit: String,
+        moodInherit: String,
+        EntertainmentsInherit: Object,
+        DiaryInherit: Object
+    },
+    emits: ['callSubmit'],
     data() {
         return {
             date: '',
@@ -247,17 +255,19 @@ export default {
     },
     beforeMount() {
         this.date = '';
-        this.mood = ''
+        this.mood = '';
         for (const key of Object.keys(this.Entertainments)) {
             this.Entertainments[key] = false;
         }
         this.Diary.title = '';
         this.Diary.content = '';
-
+        this.date = this.dateInherit;
+        this.mood = this.moodInherit;
     },
     mounted() {
         //new Collapse(this.$refs.myAccordion);
         this.maxDate = new Date();
+        console.log(111111);
     },
     methods: {
         /*
@@ -277,6 +287,13 @@ export default {
             
         },
         */
+        feedInData(data) {
+            console.log(data);
+            this.date = data.date;
+            this.mood = data.mood;
+            this.Entertainments = data.Entertainments;
+            //this.Diary = data.diary;
+        },
         haveRequiredInputs() {
             // currently just checking is date and mood is selected
             if (!this.date || !this.mood) {
@@ -293,7 +310,7 @@ export default {
             if (this.haveRequiredInputs()) {
                 this.sendToDatabase();
                 this.resetAllFields();
-                this.$router.push('/main')
+                //this.$router.push('/main')
             }
             else {
                 console.log('empty required inputs');
@@ -312,10 +329,10 @@ export default {
             this.maxDate = new Date();
         },
         sendToDatabase() {
-            const date = this.date;
-            const dateString = date.toLocaleDateString();
-            console.log(dateString)
-
+            //const date = this.date;
+            //const dateString = date.toLocaleDateString();
+            //console.log(dateString)
+            /*
             // change mood to a int value
             let mood;
             if (this.mood === "Super Great") {
@@ -329,7 +346,7 @@ export default {
             } else {
                 mood = 0;
             }
-            
+            */
             // make a string containing all the actiities which user selected
             const selectedEntertainments = Object.keys(this.Entertainments).filter(key => this.Entertainments[key] === true);
             let selectedEntertainmentsString = ""
@@ -349,8 +366,8 @@ export default {
 
             const entry = {
                 id: userID,
-                entryDate: dateString,
-                mood: mood,
+                entryDate: this.date,
+                mood: this.mood,
                 activities: selectedEntertainmentsString,
                 journal: journal
             }
@@ -367,7 +384,8 @@ export default {
         },
         submitForm(event) {
             event.preventDefault(); // prevent default submission
-            this.startSubmission();
+            this.$emit("callSubmit");
+            //this.startSubmission();
         }
     }
 }

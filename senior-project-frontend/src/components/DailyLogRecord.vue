@@ -106,14 +106,40 @@
         New Log
     </el-button>
 
+    <el-button type="primary" size="large" @click="openModal()">
+        Open Drawer with nested form
+    </el-button>
+
+    <el-drawer
+        ref="drawerRef"
+        v-model="dialog"
+        title="I have a nested form inside!"
+        :before-close="handleClose"
+        direction="ltr"
+        class="demo-drawer"
+        :size = formLabelWidth
+    >
+        <div class="demo-drawer__content">
+            
+            <DailyLog @callSubmit="onSubmission" ref="childLog"></DailyLog>
+            <div class="demo-drawer__footer">
+                <el-button @click="cancelForm">Cancel</el-button>
+                <el-button type="primary" :loading="loading" @click="onSubmission">{{
+                loading ? 'Submitting ...' : 'Submit'
+                }}</el-button>
+            </div>
+        </div>
+    </el-drawer>
+
 </template>
 
 <script>
-//import DailyLog from './DailyLog.vue';
+import DailyLog from './DailyLog.vue';
 import axios from 'axios';
+//import { ElDrawer } from 'element-plus';
 
 export default ({
-    //components: {DailyLog},
+    components: {DailyLog},
     data() {
         return {
             selectedDay: new Date(),
@@ -121,11 +147,17 @@ export default ({
                 
             ],
             receivedLog: null,
-            modalOpen: false
+            modalOpen: false,
+            formLabelWidth: '50%',
+            drawerRef: null,
+            dialog: false,
+            loading: false,
+            timer: null,
         }
     },
     mounted() {
         this.retriveRecords();
+        this.drawerRef = this.$refs.drawerRef;
     },
     methods: {
         /*
@@ -135,6 +167,12 @@ export default ({
             this.$refs.closeButton.click()
         },
         */
+        openModal() {
+            this.dialog = true;
+            this.$nextTick(() => {
+                this.feedToChild();
+            });
+        },
         retriveRecords() {
             const userLoginData = localStorage.getItem("user_login");
             const userData = JSON.parse(userLoginData);
@@ -163,6 +201,9 @@ export default ({
         haveRecordOnDay(date) {
             return this.records.some((record) => record.date === date)
         },
+        getSelectedDay() {
+            return this.selectedDay;
+        },
         getRecordOnDay(date) {
             return this.records.find((record) => record.date === date)
         },
@@ -171,6 +212,61 @@ export default ({
             if (record != null) {
                 return record.mood
             }
+        },
+        getMoodForChild() {
+            const selectedDateStr = this.formatDateToYYYYMMDD();
+            if (this.haveRecordOnDay(selectedDateStr)) {
+                return this.getMoodOnDay(selectedDateStr);
+            }
+            else {
+                return '';
+            }
+        },
+        feedToChild() {
+            const selectedDateStr = this.formatDateToYYYYMMDD();
+            if (this.haveRecordOnDay(selectedDateStr)) {
+                const record = this.getRecordOnDay(selectedDateStr);
+
+                let activityArray = record.activity;
+                console.log(activityArray);
+                let entertainmentsObject = { classes: false, tests: false, quizes: false, assignments: false, projects: false, party: false, boardGames: false,
+                    outdoorPicnic: false, movies: false, concert: false, traveling: false, volunteerActivities: false, gaming: false, 
+                    gastronomic: false, reading: false, basketBall: false, soccer: false, football: false, tennis: false, swimming: false,
+                    baseball: false, golf: false, trackAndField: false, cycling: false, weightTraining: false };
+                activityArray.forEach(activity => {
+                    let actString = activity.trim()
+                    if (actString in entertainmentsObject) {
+                        
+                        entertainmentsObject[actString] = true;
+                    }
+                });
+                const toFeed = {
+                    date: record.date,
+                    mood: record.mood,
+                    Entertainments: entertainmentsObject,
+                    Diary: { title: '', content: '' },
+                }
+                console.log(toFeed);
+                this.$refs.childLog.feedInData(toFeed);
+            }
+            else {
+                const toFeed = {
+                    date: this.formatDateToYYYYMMDD(),
+                    mood: '',
+                    Entertainments: { classes: false, tests: false, quizes: false, assignments: false, projects: false, party: false, boardGames: false,
+                        outdoorPicnic: false, movies: false, concert: false, traveling: false, volunteerActivities: false, gaming: false, 
+                        gastronomic: false, reading: false, basketBall: false, soccer: false, football: false, tennis: false, swimming: false,
+                        baseball: false, golf: false, trackAndField: false, cycling: false, weightTraining: false },
+                    Diary: { title: '', content: '' },
+                }
+                this.$refs.childLog.feedInData(toFeed);
+            }
+        },
+        formatDateToYYYYMMDD() {
+            const year = this.selectedDay.getFullYear();
+            const month = String(this.selectedDay.getMonth() + 1).padStart(2, '0');
+            const day = String(this.selectedDay.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
         },
         selectDate(val) {
             const currentMonth = this.selectedDay.getMonth();
@@ -206,7 +302,39 @@ export default ({
                 }
                 //this.selectedDay = new Date(this.selectedDay.setMonth(this.selectedDay.getMonth() + 1))
             }
-        }
+        },
+        onSubmission() {
+            if (this.loading) {
+                return;
+            }
+            this.$confirm('Do you want to submit?')
+                .then(() => {
+                this.loading = true;
+                this.timer = setTimeout(() => {
+                    this.$refs.childLog.startSubmission();
+                    this.drawerRef.close();
+                    this.retriveRecords();
+                    //done();
+                    // 动画关闭需要一定的时间
+                    setTimeout(() => {
+                    this.loading = false;
+                    }, 400);
+                }, 2000);
+                })
+                .catch(() => {
+                // catch error
+                });
+                
+            //this.drawerRef.close();
+        },
+        handleClose() {
+            this.drawerRef.close();
+        },
+        cancelForm() {
+            this.loading = false;
+            this.dialog = false;
+            clearTimeout(this.timer);
+        },
     }
 })
 </script>
