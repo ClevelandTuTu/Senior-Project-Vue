@@ -1,5 +1,4 @@
 <template>
-    {{ date }}
     <div class="container-fluid">
             <form id="dailyQuiz" class="needs-validation" @submit="submitForm" ref="logForm">
 
@@ -8,7 +7,7 @@
                         <!--<VueDatePicker @click="updateDate" v-model="date" :max-date="maxDate" :enable-time-picker="false" 
                         :language="datepickerLanguage" :format="datepickerFormat" :readonly="false" required/>-->
                         <h5>Date:</h5>
-                        {{ date }}
+                        <input style="text-align: center;" v-model="date" disabled placeholder="Please input" />
                     </div>
                     <!--
                     <div class="col-9">
@@ -33,25 +32,39 @@
                                 <h4>How do you feel?</h4>
                                 <div class="row">
                                     <div class="col">
-                                        <i class="fa-solid fa-face-grin-stars"></i>
                                         <input type="radio" v-model="mood" value="4" class="btn-check" name="mood" id="mood1" autocomplete="off">
-                                        <label class="btn btn-outline-primary" for="mood1">Super Great</label>
+                                        <label class="btn btn-outline-primary" for="mood1">
+                                            <font-awesome-icon icon="fa-regular fa-face-laugh-beam" style="font-size: 1.5em" />
+                                            Super Great
+                                        </label>
                                     </div>
                                     <div class="col">
                                         <input type="radio" v-model="mood" value="3" class="btn-check" name="mood" id="mood2" autocomplete="off">
-                                        <label class="btn btn-outline-info" for="mood2">Great</label>
+                                        <label class="btn btn-outline-info" for="mood2">
+                                            <font-awesome-icon icon="fa-regular fa-face-smile-beam" style="font-size: 1.5em" />
+                                            Great
+                                        </label>
                                     </div>
                                     <div class="col">
                                         <input type="radio" v-model="mood" value="2" class="btn-check" name="mood" id="mood3" autocomplete="off">
-                                        <label class="btn btn-outline-warning" for="mood3">Not Bad</label>
+                                        <label class="btn btn-outline-warning" for="mood3">
+                                            <font-awesome-icon icon="fa-regular fa-face-meh" style="font-size: 1.5em" />
+                                            Not Bad
+                                        </label>
                                     </div>
                                     <div class="col">
                                         <input type="radio" v-model="mood" value="1" class="btn-check" name="mood" id="mood4" autocomplete="off">
-                                        <label class="btn btn-outline-dark" for="mood4">Bad</label>
+                                        <label class="btn btn-outline-dark" for="mood4">
+                                            <font-awesome-icon icon="fa-regular fa-face-frown" style="font-size: 1.5em" />
+                                            Bad
+                                        </label>
                                     </div>
                                     <div class="col">
                                         <input type="radio" v-model="mood" value="0" class="btn-check" name="mood" id="mood5" autocomplete="off">
-                                        <label class="btn btn-outline-danger" for="mood5">Super Bad</label>
+                                        <label class="btn btn-outline-danger" for="mood5">
+                                            <font-awesome-icon icon="fa-regular fa-face-sad-tear" style="font-size: 1.5em" />
+                                            Super Bad
+                                        </label>
                                     </div>
                                 </div>
                           
@@ -191,21 +204,15 @@
                     <div class="accordion-item">
                       <h2 class="accordion-header" id="headingThree">
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseThree" aria-expanded="false" aria-controls="panelsStayOpen-collapseThree">
-                          Diary
+                            Diary
                         </button>
                       </h2>
                       <div id="panelsStayOpen-collapseThree" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingThree">
                         <div class="accordion-body">
-                            <h4>Record your mood and your day</h4>
+                            <h4>Write done something to record your mood and your day</h4>
                             <br>
-                            <h6>Title:</h6>
                             <div class="input-group">
-                                <input type="text" v-model="Diary.title" class="form-control" placeholder="Title of diary" aria-label="TitleOfDiary" aria-describedby="basic-addon1">
-                            </div>
-                            <br>
-                            <h6>Content:</h6>
-                            <div class="input-group">
-                                <textarea v-model="Diary.content" class="form-control" placeholder="Write something about your day" aria-label="diaryContent"></textarea>
+                                <textarea v-model="Diary" class="form-control textarea" placeholder="Write something about your day" aria-label="diary"></textarea>
                             </div>
                         </div>
                       </div>
@@ -231,13 +238,6 @@ import axios from 'axios';
 
 export default {
     name: 'DailyLog',
-    //components: { VueDatePicker },
-    props: {
-        dateInherit: String,
-        moodInherit: String,
-        EntertainmentsInherit: Object,
-        DiaryInherit: Object
-    },
     emits: ['callSubmit'],
     data() {
         return {
@@ -247,10 +247,11 @@ export default {
                 outdoorPicnic: false, movies: false, concert: false, traveling: false, volunteerActivities: false, gaming: false, 
                 gastronomic: false, reading: false, basketBall: false, soccer: false, football: false, tennis: false, swimming: false,
                 baseball: false, golf: false, trackAndField: false, cycling: false, weightTraining: false },
-            Diary: { title: '', content: '' },
+            Diary: '',
             datepickerLanguage: 'en',
             datepickerFormat: 'yyyy/MM/dd',
-            maxDate: new Date()
+            maxDate: new Date(),
+            update: false
         }
     },
     beforeMount() {
@@ -259,40 +260,22 @@ export default {
         for (const key of Object.keys(this.Entertainments)) {
             this.Entertainments[key] = false;
         }
-        this.Diary.title = '';
-        this.Diary.content = '';
+        this.Diary = '';
         this.date = this.dateInherit;
         this.mood = this.moodInherit;
     },
     mounted() {
         //new Collapse(this.$refs.myAccordion);
         this.maxDate = new Date();
-        console.log(111111);
     },
     methods: {
-        /*
-        sendToRecord() {
-            const date = this.log.date;
-            const mood = this.log.mood;
-            const Entertainments = JSON.parse(JSON.stringify(this.log.Entertainments));
-            const Diary = JSON.parse(JSON.stringify(this.log.Diary));
-            const copyLog = {
-                date: date,
-                mood: mood,
-                Entertainments: Entertainments,
-                Diary: Diary
-                };
-            this.$emit('transmitDailyLog', copyLog)
-
-            
-        },
-        */
         feedInData(data) {
             console.log(data);
             this.date = data.date;
             this.mood = data.mood;
             this.Entertainments = data.Entertainments;
-            //this.Diary = data.diary;
+            this.Diary = data.Diary;
+            this.update = data.update;
         },
         haveRequiredInputs() {
             // currently just checking is date and mood is selected
@@ -322,31 +305,12 @@ export default {
             for (const key of Object.keys(this.Entertainments)) {
                 this.Entertainments[key] = false;
             }
-            this.Diary.title = '';
-            this.Diary.content = '';
+            this.Diary = '';
         },
         updateDate() {
             this.maxDate = new Date();
         },
-        sendToDatabase() {
-            //const date = this.date;
-            //const dateString = date.toLocaleDateString();
-            //console.log(dateString)
-            /*
-            // change mood to a int value
-            let mood;
-            if (this.mood === "Super Great") {
-                mood = 4;
-            } else if (this.mood === "Great") {
-                mood = 3;
-            } else if (this.mood === "Not Bad") {
-                mood = 2;
-            } else if (this.mood === "Bad") {
-                mood = 1;
-            } else {
-                mood = 0;
-            }
-            */
+        async sendToDatabase() {
             // make a string containing all the actiities which user selected
             const selectedEntertainments = Object.keys(this.Entertainments).filter(key => this.Entertainments[key] === true);
             let selectedEntertainmentsString = ""
@@ -356,9 +320,9 @@ export default {
             }
             
             //const diary = JSON.parse(JSON.stringify(this.Diary));
-            const diaryTitle = this.Diary.title;
-            const diaryContent = this.Diary.content;
-            const journal = diaryTitle + ': ' + diaryContent;
+            //const diaryTitle = this.Diary.title;
+            //const diaryContent = this.Diary.content;
+            const journal = this.Diary;
 
             const userLoginData = localStorage.getItem("user_login");
             const userData = JSON.parse(userLoginData);
@@ -373,13 +337,32 @@ export default {
             }
             console.log(entry)
             
-            axios.post("http://localhost:8080/entry/insertEntry", entry)
-            .then(res => {
-                console.log(res)
-            })
-            .catch(error => {
-                console.log(error)
-            })
+            if (this.update == false) {
+                axios.post("http://localhost:8080/entry/insertEntry", entry)
+                .then(res => {
+                    console.log(res)
+                })
+                .catch(error => {
+                    console.log(error)
+                })
+            }
+            else {
+                console.log("updating")
+                // first delete the old record
+                const request = 'http://localhost:8080/entry/deleteEntry/' + userID + '/' + this.date;
+                console.log(request);
+                await axios.delete(request);
+
+                // then insert
+                axios.post("http://localhost:8080/entry/insertEntry", entry)
+                .then(res => {
+                    console.log(res)
+                })
+                .catch(error => {
+                    console.log(error)
+                })
+            }
+            
             
         },
         submitForm(event) {
@@ -402,5 +385,8 @@ export default {
     color: red;
     font-style: italic;
     font-size: 20px;
+}
+.textarea {
+    height: 200px;
 }
 </style>

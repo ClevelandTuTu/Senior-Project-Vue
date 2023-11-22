@@ -1,11 +1,5 @@
 <template>
     <!--
-    <p>email:</p>
-    <input v-model="user.email" placeholder="Type in your email please" />
-    <p>password:</p>
-    <input v-model="user.password" placeholder="Type in your password please" />
-    <button @click="login()">Log in</button>
--->
     <div class="login-container">
         <div class="login-wrapper">
             <div class="header">Login</div>
@@ -20,18 +14,47 @@
             </div>
         </div>
     </div>
+    -->
+    <div class="login-container">
+        <el-card shadow="never" class="box-card" :body-style="{ padding: 20 }">
+        <div class="m-8 text-center">
+            <el-text type="primary" :style="{ fontSize: '25px' }" class="my-3">Mindful Journey Website</el-text>
+
+            <el-text tag="h2" class="my-3">Log in</el-text>
+            <el-text tag="p" class="text-[#868e96]">
+                Don't have an account?
+                <el-link type="primary" @click="toSignUp()">Sign up (CWRU students)</el-link>
+            </el-text>
+            </div>
+            <el-form label-position="top">
+                <el-form-item label="Case ID">
+                    <el-input v-model="user.email" size="large" />
+                </el-form-item>
+                <el-form-item label="Password">
+                    <el-input v-model="user.password" size="large" show-password />
+                </el-form-item>
+                <div class="flex justify-between mb-2" style="text-align: right;">
+                    <el-link type="primary" @click="toResetPassword">Forgot password?</el-link>
+                </div>
+                <el-button type="primary" size="large" style="width: 100%;" @click="login()">Sign in</el-button>
+            </el-form>
+        </el-card>
+    </div>
 </template>
 
 <script>
 import axios from 'axios';
+import { ElLoading, ElMessage } from 'element-plus'
+import RSA from '../utils/rsa.js'
+import AES from '../utils/aes.js'
+
 export default {
     data() {
         return {
             user: {
                 email: '',
                 password: '',
-                connection: null
-            }
+            },
         }
     },
     methods: {
@@ -40,16 +63,39 @@ export default {
             .then(res => {
                 console.log(res.data);
                 localStorage.setItem("user_login", JSON.stringify(res.data))
-                this.$router.push('/main')
+                const loadingInstance = ElLoading.service({
+                lock: true,
+                text: 'Loading',
+                background: 'rgba(0, 0, 0, 0.7)',
+            })
+            setTimeout(() => {
+                // 模拟加载完成后的操作
+                loadingInstance.close() // 关闭加载状态
+                this.$nextTick(() => {
+                    // 在DOM更新后执行操作
+                    this.$router.push('/main')
+                })
+            }, 500)
+                
             })
             .catch(error => {
                 console.error(error);
-                alert("Login failed. Please check your email and password!")
+                ElMessage.error("Login failed. Please check your email and password!");
             })
         },
         toSignUp() {
-            this.$router.push('/signup')
-        }
+            this.$router.push('/signup');
+        },
+        toResetPassword() {
+            this.$router.push('/resetpassword');
+        },
+        test() {
+            console.log(RSA.decrypt(RSA.encrypt("abcdef")));
+            console.log(AES.decryptAes(AES.encryptAes("abcdef")));
+        },
+    },
+    mounted() {
+        this.test();
     }
 }
 </script>
@@ -83,6 +129,18 @@ body {
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
+}
+.box-card {
+    width: 480px;
+    background-color: #fff;
+    border-radius: 20px;
+    height: 410px;
+    margin: auto;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
 }
 .header {
     font-size: 38px;

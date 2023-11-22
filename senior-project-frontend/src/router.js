@@ -8,12 +8,14 @@ import SpinTheWheelPage from './views/SpinTheWheelPage.vue';
 import ColoringBook from './views/ColoringBookPage.vue';
 import GameSelection from './views/GameSelection.vue';
 import NewDailyLogPage from './views/NewDailyLogPage.vue';
+import ResetPage from './views/ResetPage.vue';
 
 const router = createRouter({
   history: createWebHistory(),
   routes: [
     { path: '/', name: 'login', component: LoginPage },
     { path: '/signup', name: 'signup', component: RegisterPage },
+    { path: '/resetpassword', name: 'resetpassword', component: ResetPage },
     { path: '/main', name: 'main', component: MainPage },
     { path: '/chatroom', name: 'chatroom', component: ChatroomPage },
     { path: '/spinthewheel', name: 'spinthewheel', component: SpinTheWheelPage },

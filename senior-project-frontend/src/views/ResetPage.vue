@@ -1,28 +1,12 @@
 <template>
-    <!--
-    <div class="login-container">
-        <div class="login-wrapper">
-            <div class="header">Sign Up now!</div>
-            <div class="form-wrapper">
-                <input v-model="user.email" type="text" name="username" placeholder="email" class="input-item">
-                <input v-model="user.password" type="password" name="password" placeholder="password" class="input-item">
-                <div class="btn" @click="register()" >Sign Up</div>
-            </div>
-            <div class="msg">
-                Already have an account?
-                <a href="#" @click="toSignIn()">Sign in</a>
-            </div>
-        </div>
-    </div>
--->
     <div class="login-container">
         <el-card shadow="never" class="box-card" :body-style="{ padding: 20 }">
         <div class="m-8 text-center">
             <el-text type="primary" :style="{ fontSize: '25px' }" class="my-3">Mindful Journey Website</el-text>
 
-            <el-text tag="h2" class="my-3">Sign Up</el-text>
+            <el-text tag="h2" class="my-3">Reset Password</el-text>
             <el-text tag="p" class="text-[#868e96]">
-                Already has an account?
+                Remember your password?
                 <el-link type="primary" @click="toSignIn()">Log in (CWRU students)</el-link>
             </el-text>
             </div>
@@ -39,7 +23,7 @@
                         </el-text>  
                     </el-button>
                 </el-form-item>
-                <el-form-item label="Password" v-if="verified">
+                <el-form-item label="New Password" v-if="verified">
                     <el-input v-model="user.password" size="large" show-password />
                 </el-form-item>
                 <br>
@@ -47,7 +31,7 @@
                     Please enter you Case ID (ex. abc1234) then press "Send Code"
                 </el-text>  
                 <el-button v-if="!verified" :disabled="!emailSentOut" type="primary" size="large" style="width: 100%;" @click="VerifyCode()">Verify</el-button>
-                <el-button v-if="verified" type="primary" size="large" style="width: 100%;" @click="register()">Register</el-button>
+                <el-button v-if="verified" type="primary" size="large" style="width: 100%;" @click="reset()">Reset Password</el-button>
             </el-form>
         </el-card>
     </div>
@@ -73,15 +57,23 @@ export default {
         }
     },
     methods: {
-        register() {
-            axios.post("http://localhost:8080/register", this.user)
+        reset() {
+            axios.post("http://localhost:8080/reset", this.user)
             .then(res => {
                 console.log(res.data);
-                ElMessage({
+                if (res.data == 1) {
+                    ElMessage({
                     type: 'success',
-                    message: 'Registered successfully, please Sign In',
-                });
-                this.$router.push('/');
+                    message: 'Reset password successfully, please Sign In',
+                    });
+                    this.$router.push('/');
+                }
+                else if (res.data == -1) {
+                    ElMessage.error("This email is not registered, please register first!");
+                }
+                else if (res.data == -2) {
+                    ElMessage.error("New password is the same as the old one");
+                }
             })
             .catch(error => {
                 console.error(error);

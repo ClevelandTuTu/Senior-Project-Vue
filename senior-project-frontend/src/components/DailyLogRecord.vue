@@ -1,70 +1,13 @@
 <template>
     <br>
-    <!--
-    <table class="table table-responsive recordTable">
-        <thead>
-            <tr>
-                <th class="col-3 tableTitle">Date</th>
-                <th class="col-2 tableTitle">Mood</th>
-                <th class="col-2 tableTitle">Activities</th>
-                <th class="col-5 tableTitle">Journal</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr v-for="item in records" :key="item.date">
-                <td class="tableTitle"> {{ item.date }}</td>
-                <td class="tableTitle"> 
-                    <span v-if="item.mood === 0">Super Bad</span>
-                    <span v-else-if="item.mood === 1">Bad</span>
-                    <span v-else-if="item.mood === 2">Not Bad</span>
-                    <span v-else-if="item.mood === 3">Great</span>
-                    <span v-else-if="item.mood === 4">Super Great</span>    
-                </td>
-                <td class="activity">
-                    <div v-for="(act, index) in item.activity" :key="index">
-                            {{ act }}
-                    </div>
-                </td>
-                <td class="activity">
-                    {{ item.journal }}
-                </td>
-            </tr>
-        </tbody>
-    </table>-->
-
-    <!--
-    <div class="row">
-        <div class="col-10"></div>
-        <button @click="handleClick()" type="button" class="btn btn-primary col-2" data-bs-toggle="modal" data-bs-target="#dailyLog">
-            New DailyLog
-        </button>
-
-        <div class="modal fade" id="dailyLog" data-bs-keyboard="false" data-bs-backdrop="static" tabindex="-1" aria-labelledby="dailyLog" aria-hidden="true" ref="modal">
-            <div class="modal-dialog modal-xl">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="dailyLog">DailyLog</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <DailyLog @transmitDailyLog="receiveDailyLog" ref="dailyLogRef" />
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" ref="closeButton">Close</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    -->
 
     <div class="test">
         <el-calendar v-model="selectedDay">
         <template #header="{ date }">
             <span style="font-weight: bold; font-size: 30px;">{{ date }}</span>
             <el-button-group>
-                <el-button type="primary" size="large" @click="selectDate('prev-month')" :icon="ArrowLeft">
-                <ArrowLeft />Previous Month
+                <el-button type="primary" size="large" @click="selectDate('prev-month')">
+                Previous Month
                 </el-button>
                 <el-button type="primary" size="large" @click="selectDate('today')">Today</el-button>
                 <el-button type="primary" size="large" @click="selectDate('next-month')">
@@ -102,18 +45,22 @@
     </div>
 
     <hr>
-    <el-button type="primary" size="large">
-        New Log
+    <el-button v-if="!haveRecordOnFormatedSelectedDay()" type="primary" size="large" @click="openModal()">
+        Add Log
     </el-button>
 
-    <el-button type="primary" size="large" @click="openModal()">
-        Open Drawer with nested form
+    <el-button v-if="haveRecordOnFormatedSelectedDay()" type="primary" size="large" @click="openModalForUpdate()">
+        Update Log
+    </el-button>
+
+    <el-button v-if="haveRecordOnFormatedSelectedDay()" type="danger" size="large" @click="deleteRecord()">
+        Delete Log
     </el-button>
 
     <el-drawer
         ref="drawerRef"
         v-model="dialog"
-        title="I have a nested form inside!"
+        title="Log"
         :before-close="handleClose"
         direction="ltr"
         class="demo-drawer"
@@ -122,12 +69,13 @@
         <div class="demo-drawer__content">
             
             <DailyLog @callSubmit="onSubmission" ref="childLog"></DailyLog>
+            <!--
             <div class="demo-drawer__footer">
                 <el-button @click="cancelForm">Cancel</el-button>
                 <el-button type="primary" :loading="loading" @click="onSubmission">{{
                 loading ? 'Submitting ...' : 'Submit'
                 }}</el-button>
-            </div>
+            </div>-->
         </div>
     </el-drawer>
 
@@ -136,6 +84,8 @@
 <script>
 import DailyLog from './DailyLog.vue';
 import axios from 'axios';
+import { ElLoading } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 //import { ElDrawer } from 'element-plus';
 
 export default ({
@@ -153,6 +103,7 @@ export default ({
             dialog: false,
             loading: false,
             timer: null,
+            update: false
         }
     },
     mounted() {
@@ -169,11 +120,22 @@ export default ({
         */
         openModal() {
             this.dialog = true;
+            this.update = false;
+            this.$nextTick(() => {
+                this.feedToChild();
+            });
+        },
+        openModalForUpdate() {
+            this.dialog = true;
+            this.update = true;
             this.$nextTick(() => {
                 this.feedToChild();
             });
         },
         retriveRecords() {
+            // clear records first
+            this.records = [];
+
             const userLoginData = localStorage.getItem("user_login");
             const userData = JSON.parse(userLoginData);
             const userID = userData.email; // don't forget to change this to ID if database changes
@@ -188,9 +150,7 @@ export default ({
                         activity: entry.activities.split(',').filter(element => element.trim() !== ''),
                         journal: entry.journal
                     }
-                    console.log(log)
                     this.records.push(log)
-                    console.log(this.records)
                     
                 });
             })
@@ -198,8 +158,52 @@ export default ({
                 console.log(error)
             })
         },
+        deleteRecord() {
+            ElMessageBox.confirm(
+                'Permanently delete the ' + this.formatDateToYYYYMMDD(this.selectedDay) + ' record, Continue?',
+                'Warning',
+                {
+                confirmButtonText: 'OK',
+                cancelButtonText: 'Cancel',
+                type: 'warning',
+                }
+            )
+                .then(() => {
+                    this.deleteLogOnSelectedDay();
+                    this.recordLoading();
+                    setTimeout(() => {
+                        ElMessage({
+                            type: 'success',
+                            message: 'Delete completed',
+                        })
+                    }, 2000);
+                    
+                })
+                .catch(() => {
+                    ElMessage({
+                        type: 'info',
+                        message: 'Delete canceled',
+                    })
+                })
+        },
+        async deleteLogOnSelectedDay() {
+            try {
+                const userLoginData = localStorage.getItem("user_login");
+                const userData = JSON.parse(userLoginData);
+                const userID = userData.email; // don't forget to change this to ID if database changes
+                const request = 'http://localhost:8080/entry/deleteEntry/' + userID + '/' + this.formatDateToYYYYMMDD(this.selectedDay);
+                console.log(request);
+                await axios.delete(request);
+            }
+            catch (error) {
+                console.log(error);
+            }
+        },
         haveRecordOnDay(date) {
             return this.records.some((record) => record.date === date)
+        },
+        haveRecordOnFormatedSelectedDay() {
+            return this.haveRecordOnDay(this.formatDateToYYYYMMDD());
         },
         getSelectedDay() {
             return this.selectedDay;
@@ -224,6 +228,7 @@ export default ({
         },
         feedToChild() {
             const selectedDateStr = this.formatDateToYYYYMMDD();
+            // if updating
             if (this.haveRecordOnDay(selectedDateStr)) {
                 const record = this.getRecordOnDay(selectedDateStr);
 
@@ -244,11 +249,14 @@ export default ({
                     date: record.date,
                     mood: record.mood,
                     Entertainments: entertainmentsObject,
-                    Diary: { title: '', content: '' },
+                    Diary: record.journal,
+                    update: this.update
                 }
                 console.log(toFeed);
+                console.log("update: " + this.update);
                 this.$refs.childLog.feedInData(toFeed);
             }
+            // if adding new
             else {
                 const toFeed = {
                     date: this.formatDateToYYYYMMDD(),
@@ -257,7 +265,8 @@ export default ({
                         outdoorPicnic: false, movies: false, concert: false, traveling: false, volunteerActivities: false, gaming: false, 
                         gastronomic: false, reading: false, basketBall: false, soccer: false, football: false, tennis: false, swimming: false,
                         baseball: false, golf: false, trackAndField: false, cycling: false, weightTraining: false },
-                    Diary: { title: '', content: '' },
+                    Diary: '',
+                    update: this.update
                 }
                 this.$refs.childLog.feedInData(toFeed);
             }
@@ -310,22 +319,46 @@ export default ({
             this.$confirm('Do you want to submit?')
                 .then(() => {
                 this.loading = true;
-                this.timer = setTimeout(() => {
-                    this.$refs.childLog.startSubmission();
+                this.$refs.childLog.startSubmission();
                     this.drawerRef.close();
-                    this.retriveRecords();
+                    this.recordLoading();
                     //done();
                     // 动画关闭需要一定的时间
                     setTimeout(() => {
-                    this.loading = false;
-                    }, 400);
-                }, 2000);
+                        this.loading = false;
+                        ElMessage({
+                            type: 'success',
+                            message: 'Submit completed',
+                        })
+                    }, 2000);
                 })
                 .catch(() => {
                 // catch error
                 });
-                
-            //this.drawerRef.close();
+        },
+        onUpdate() {
+            if (this.loading) {
+                return;
+            }
+            this.$confirm('Do you want to update the log?')
+                .then(() => {
+                    this.loading = true;
+                    this.$refs.childLog.startSubmission();
+                    this.drawerRef.close();
+                    this.recordLoading();
+                    //done();
+                    // 动画关闭需要一定的时间
+                    setTimeout(() => {
+                        this.loading = false;
+                        ElMessage({
+                            type: 'success',
+                            message: 'Submit completed',
+                        })
+                    }, 2000);
+                })
+                .catch(() => {
+                // catch error
+                });
         },
         handleClose() {
             this.drawerRef.close();
@@ -335,6 +368,21 @@ export default ({
             this.dialog = false;
             clearTimeout(this.timer);
         },
+        recordLoading() {
+            const loadingInstance = ElLoading.service({
+                lock: true,
+                text: 'Loading',
+                background: 'rgba(0, 0, 0, 0.7)',
+            })
+            setTimeout(() => {
+                // 模拟加载完成后的操作
+                loadingInstance.close() // 关闭加载状态
+                this.$nextTick(() => {
+                    // 在DOM更新后执行操作
+                    this.retriveRecords();
+                })
+            }, 2000)
+        }
     }
 })
 </script>

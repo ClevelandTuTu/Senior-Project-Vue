@@ -1,4 +1,5 @@
 <template>
+    <!--
     <div @click="switchToRecord">
         <a href="#">Record</a>
     </div>
@@ -7,6 +8,29 @@
     </div>
     <div>
         <a href="#">Analysis (in progress)</a>
+    </div>
+    -->
+    <div>
+        <el-col>
+            <el-menu
+                default-active="1"
+                class="el-menu-vertical-demo"
+                @open="handleOpen"
+                @close="handleClose"
+            >
+                <el-menu-item index="1">
+                    <!--add icon here-->
+                    <span class="mx-5" size="large" >Default</span>
+                </el-menu-item>
+                <el-menu-item index="2">
+                    <!--add icon here-->
+                    <span class="mx-5" size="large" >Chart</span>
+                </el-menu-item>
+                <el-menu-item index="100">
+
+                </el-menu-item>
+            </el-menu>
+        </el-col>
     </div>
 </template>
 
@@ -27,6 +51,13 @@ export default {
 </script>
 
 <style scoped>
+.el-menu {
+      border-right: 0;
+      width: 200px;
+}
+.el-menu-item {
+    text-align: center;
+}
 a {
     display: block;
     width: 200px;
