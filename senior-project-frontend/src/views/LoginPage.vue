@@ -1,20 +1,4 @@
 <template>
-    <!--
-    <div class="login-container">
-        <div class="login-wrapper">
-            <div class="header">Login</div>
-            <div class="form-wrapper">
-                <input v-model="user.email" type="text" name="username" placeholder="email" class="input-item">
-                <input v-model="user.password" type="password" name="password" placeholder="password" class="input-item">
-                <div class="btn" @click="login()" >Login</div>
-            </div>
-            <div class="msg">
-                Don't have account?
-                <a href="#" @click="toSignUp()">Sign up</a>
-            </div>
-        </div>
-    </div>
-    -->
     <div class="login-container">
         <el-card shadow="never" class="box-card" :body-style="{ padding: 20 }">
         <div class="m-8 text-center">
@@ -44,9 +28,9 @@
 
 <script>
 import axios from 'axios';
-import { ElLoading, ElMessage } from 'element-plus'
-import RSA from '../utils/rsa.js'
-import AES from '../utils/aes.js'
+import { ElLoading, ElMessage } from 'element-plus';
+import RSA from '../utils/rsa.js';
+import AES from '../utils/aes.js';
 
 export default {
     data() {
@@ -59,23 +43,32 @@ export default {
     },
     methods: {
         login() {
-            axios.post("http://localhost:8080/login", this.user)
+            const toTransmit = this.GetAESkeyAndCipherText();
+            axios.post("http://localhost:8080/login", toTransmit)
             .then(res => {
                 console.log(res.data);
-                localStorage.setItem("user_login", JSON.stringify(res.data))
-                const loadingInstance = ElLoading.service({
-                lock: true,
-                text: 'Loading',
-                background: 'rgba(0, 0, 0, 0.7)',
-            })
-            setTimeout(() => {
-                // 模拟加载完成后的操作
-                loadingInstance.close() // 关闭加载状态
-                this.$nextTick(() => {
-                    // 在DOM更新后执行操作
-                    this.$router.push('/main')
-                })
-            }, 500)
+                if (res.data == 1) {
+                    localStorage.setItem("user_login", JSON.stringify(this.user));
+                    const loadingInstance = ElLoading.service({
+                        lock: true,
+                        text: 'Loading',
+                        background: 'rgba(0, 0, 0, 0.7)',
+                    });
+                    setTimeout(() => {
+                        // 模拟加载完成后的操作
+                        loadingInstance.close() // 关闭加载状态
+                        this.$nextTick(() => {
+                            // 在DOM更新后执行操作
+                            this.$router.push('/main')
+                        })
+                    }, 500)
+                }
+                else if (res.data == -1) {
+                    ElMessage.error("This Case email is not registered");
+                }
+                else if (res.data == -2) {
+                    ElMessage.error("Incorrect password")
+                }
                 
             })
             .catch(error => {
@@ -89,13 +82,26 @@ export default {
         toResetPassword() {
             this.$router.push('/resetpassword');
         },
-        test() {
-            console.log(RSA.decrypt(RSA.encrypt("abcdef")));
-            console.log(AES.decryptAes(AES.encryptAes("abcdef")));
+        GetAESkeyAndCipherText() {
+            //先生成一串随机16位字符串作为AES的秘钥(C)
+            const AESkey = AES.generateRandomKey(16);
+            console.log("original AES key: " + AESkey);
+            //然后使用A使用RSA算法对C进行加密，得到加密后的AES秘钥（D）
+            const encryptedAESkey = RSA.encrypt(AESkey);
+            console.log("encrpted AES key by RSA public key using encryptlong: " + encryptedAESkey);
+
+            const encryptedAESkey1 = RSA.rsaPublicData(AESkey);
+            console.log("encrpted AES key by RSA public key using jsencrypt: " + encryptedAESkey1);
+            //将要发送的数据（E）用C使用AES加密，得到密文（F）
+            const userString = JSON.stringify(this.user);
+            const cipherText = AES.encryptAes(userString, AESkey);
+            console.log("original text: " + userString);
+            console.log("cipher text: " + cipherText);
+            return {encryptedAESkey : encryptedAESkey, cipherText: cipherText}
         },
     },
     mounted() {
-        this.test();
+        
     }
 }
 </script>

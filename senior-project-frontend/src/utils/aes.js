@@ -1,8 +1,18 @@
 import CryptoJS from 'crypto-js'
 export default{
+    generateRandomKey(length) {
+        const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let randomKey = '';
+        
+        for (let i = 0; i < length; i++) {
+        const randomIndex = Math.floor(Math.random() * charset.length);
+        randomKey += charset.charAt(randomIndex);
+        }
+        
+        return randomKey;
+    },
     //AES加密
-    encryptAes (data) {
-        const aesKey = 'Oet1IsRCFQ57g0uZ';
+    encryptAes (data, aesKey) {
         if (aesKey && data) {
         const key = CryptoJS.enc.Utf8.parse(aesKey);
         const encrypt = CryptoJS.AES.encrypt(data, key, {
@@ -15,8 +25,7 @@ export default{
 
     },
     //AES解密
-    decryptAes(data){
-        const aesKey = 'Oet1IsRCFQ57g0uZ';
+    decryptAes(data, aesKey){
         if (aesKey && data) {
         const key = CryptoJS.enc.Utf8.parse(aesKey);
         const decrypt = CryptoJS.AES.decrypt(data, key, {

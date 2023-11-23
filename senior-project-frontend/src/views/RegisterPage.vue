@@ -56,6 +56,8 @@
 <script>
 import axios from 'axios';
 import { ElMessage } from 'element-plus';
+import RSA from '../utils/rsa.js';
+import AES from '../utils/aes.js';
 
 export default {
     data() {
@@ -74,14 +76,21 @@ export default {
     },
     methods: {
         register() {
-            axios.post("http://localhost:8080/register", this.user)
+            const toTransmit = this.GetAESkeyAndCipherText(1);
+            axios.post("http://localhost:8080/register", toTransmit)
             .then(res => {
                 console.log(res.data);
-                ElMessage({
-                    type: 'success',
-                    message: 'Registered successfully, please Sign In',
-                });
-                this.$router.push('/');
+                if (res.data == 1) {
+                    ElMessage({
+                        type: 'success',
+                        message: 'Registered successfully, please Sign In',
+                    });
+                    this.$router.push('/');
+                }
+                else if (res.data == -1) {
+                    ElMessage.error("Register failed")
+                }
+                
             })
             .catch(error => {
                 console.error(error);
@@ -100,7 +109,7 @@ export default {
             }
         },
         SendCode() {
-            axios.get("http://localhost:8080/sendEmail/" + this.user.email.trim())
+            axios.get("http://localhost:8080/sendRegEmail/" + this.user.email.trim())
             .then(res => {
                 console.log(res.data);
                 if (res.data == 1) {
@@ -108,20 +117,19 @@ export default {
                     type: 'success',
                     message: 'Email send out successfully, please enter the code',
                     });
-
-                this.emailSentOut = true;
-                // start cooling down
-                this.isCoolDown = true;
-                this.coolDownTimer = setInterval(() => {
-                    if (this.coolDownSeconds > 0) {
-                        this.coolDownSeconds--;
-                    } else {
-                        this.StopCoolDown();
-                    }
-                }, 1000);
+                    this.emailSentOut = true;
+                    // start cooling down
+                    this.isCoolDown = true;
+                    this.coolDownTimer = setInterval(() => {
+                        if (this.coolDownSeconds > 0) {
+                            this.coolDownSeconds--;
+                        } else {
+                            this.StopCoolDown();
+                        }
+                    }, 1000);
                 }
-                else {
-                    ElMessage.error("Incorrect Case ID. Can't find email address.");
+                else if (res.data == -1) {
+                    ElMessage.error("This email has been registered");
                 }
             })
             .catch(error => {
@@ -140,9 +148,7 @@ export default {
             return formattedDateTime;
         },
         VerifyCode() {
-            const userLoginData = localStorage.getItem("user_login");
-            const userData = JSON.parse(userLoginData);
-            const userID = userData.email; // don't forget to change this to ID if database changes
+            const userID = this.user.email; // don't forget to change this to ID if database changes
             const originalDate = new Date(); // 使用当前日期和时间，你可以替换为任何日期对象
             const formattedDate = this.formatDateTime(originalDate);
             const verification = {
@@ -150,6 +156,7 @@ export default {
                 verCode: this.code,
                 expiredDate: formattedDate
             };
+            console.log(verification)
             axios.post("http://localhost:8080/verify", verification)
             .then(res => {
                 if (res.data == 1) {
@@ -172,7 +179,30 @@ export default {
             .catch(error => {
                 console.log(error)
             })
-        }
+        },
+        GetAESkeyAndCipherText(num) {
+            //先生成一串随机16位字符串作为AES的秘钥(C)
+            const AESkey = AES.generateRandomKey(16);
+            console.log("original AES key: " + AESkey);
+            //然后使用A使用RSA算法对C进行加密，得到加密后的AES秘钥（D）
+            const encryptedAESkey = RSA.encrypt(AESkey);
+            console.log("encrpted AES key by RSA public key using encryptlong: " + encryptedAESkey);
+
+            const encryptedAESkey1 = RSA.rsaPublicData(AESkey);
+            console.log("encrpted AES key by RSA public key using jsencrypt: " + encryptedAESkey1);
+            //将要发送的数据（E）用C使用AES加密，得到密文（F）
+            let userString;
+            if (num == 1) {
+                userString = JSON.stringify(this.user);
+            }
+            else if (num == 2) {
+                userString = JSON.stringify(this.user.email.trim());
+            }
+            const cipherText = AES.encryptAes(userString, AESkey);
+            console.log("original text: " + userString);
+            console.log("cipher text: " + cipherText);
+            return {encryptedAESkey : encryptedAESkey, cipherText: cipherText}
+        },
     },
     beforeUnmount() {
         // 组件销毁时清理计时器

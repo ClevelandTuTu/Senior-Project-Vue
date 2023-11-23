@@ -139,6 +139,7 @@ export default ({
             const userLoginData = localStorage.getItem("user_login");
             const userData = JSON.parse(userLoginData);
             const userID = userData.email; // don't forget to change this to ID if database changes
+            console.log(userData);
             const request = 'http://localhost:8080/entry/selectEntries/' + userID
             axios.get(request).then(res => {
                 const entriesRetrived = res.data

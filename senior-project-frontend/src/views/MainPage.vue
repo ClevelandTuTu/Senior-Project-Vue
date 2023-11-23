@@ -4,6 +4,7 @@
         class="el-menu-demo"
         mode="horizontal"
         @select="handleSelect"
+        v-if="show != 2"
     >
         <el-menu-item index="0"><b>Mindful Journey Website</b></el-menu-item>
         <div class="flex-grow" />
@@ -19,7 +20,7 @@
         <el-menu-item index="5">Credits</el-menu-item>
     </el-menu>
     <LogModule v-if="show == 1" />
-    <ChatroomPublic v-else-if="show == 2" />
+    <ChatroomPublic v-else-if="show == 2" @leaveRoom="toMoodLog" />
     <SpinTheWheel v-else-if="show == 3.1" />
     <ColoringBook v-else-if="show == 3.2" />
 </template>
