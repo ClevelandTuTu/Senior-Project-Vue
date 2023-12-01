@@ -143,7 +143,6 @@ export default ({
             const request = 'http://localhost:8080/entry/selectEntries/' + userID
             axios.get(request).then(res => {
                 const entriesRetrived = res.data
-                console.log(res.data)
                 entriesRetrived.forEach(entry => {
                     const log = {
                         date: entry.entryDate,

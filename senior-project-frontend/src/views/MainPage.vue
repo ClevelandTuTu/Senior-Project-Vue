@@ -1,28 +1,31 @@
 <template>
-    <el-menu
-        :default-active="activeIndex"
-        class="el-menu-demo"
-        mode="horizontal"
-        @select="handleSelect"
-        v-if="show != 2"
-    >
-        <el-menu-item index="0"><b>Mindful Journey Website</b></el-menu-item>
-        <div class="flex-grow" />
-        <el-menu-item @click="toMoodLog" index="1">Mood Log</el-menu-item>
-        <el-menu-item @click="toChatroom" index="2">Chat Room</el-menu-item>
-        <el-sub-menu index="3">
-        <template #title>Game Space</template>
-        <el-menu-item @click="toSpinTheWheel" index="3-1">Spin The Wheel</el-menu-item>
-        <el-menu-item @click="toColoringBook" index="3-2">Coloring Book</el-menu-item>
-        <el-menu-item index="3-3">Game Three</el-menu-item>
-        </el-sub-menu>
-        <el-menu-item @click="toLogOut" index="4">Log Out</el-menu-item>
-        <el-menu-item index="5">Credits</el-menu-item>
-    </el-menu>
-    <LogModule v-if="show == 1" />
-    <ChatroomPublic v-else-if="show == 2" @leaveRoom="toMoodLog" />
-    <SpinTheWheel v-else-if="show == 3.1" />
-    <ColoringBook v-else-if="show == 3.2" />
+        <el-menu
+            :default-active="activeIndex"
+            class="el-menu-demo"
+            style="position: relative;"
+            mode="horizontal"
+            @select="handleSelect"
+            v-if="show != 2"
+        >
+            <el-menu-item index="0"><b>Mindful Journey Website</b></el-menu-item>
+            <div class="flex-grow" />
+            <el-menu-item @click="toMoodLog" index="1">Mood Log</el-menu-item>
+            <el-menu-item @click="toChatroom" index="2">Chat Room</el-menu-item>
+            <el-sub-menu index="3">
+            <template #title>Game Space</template>
+            <el-menu-item @click="toSpinTheWheel" index="3-1">Spin The Wheel</el-menu-item>
+            <el-menu-item @click="toColoringBook" index="3-2">Coloring Book</el-menu-item>
+            <el-menu-item index="3-3">New Game Developing</el-menu-item>
+            </el-sub-menu>
+            <el-menu-item @click="toLogOut" index="4">Log Out</el-menu-item>
+            <el-menu-item index="5">New Feature Developing</el-menu-item>
+        </el-menu>
+    <div>
+        <LogModule v-if="show == 1" />
+        <ChatroomPublic v-else-if="show == 2" @leaveRoom="toMoodLog" />
+        <SpinTheWheel v-else-if="show == 3.1" />
+        <ColoringBook v-else-if="show == 3.2" />
+    </div>
 </template>
 
 <script>

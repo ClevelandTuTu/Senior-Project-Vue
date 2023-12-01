@@ -25,9 +25,11 @@ import { faMagnifyingGlassChart } from '@fortawesome/free-solid-svg-icons'
 import { faChartLine } from '@fortawesome/free-solid-svg-icons'
 import { faChartColumn } from '@fortawesome/free-solid-svg-icons'
 import { faHeartPulse } from '@fortawesome/free-solid-svg-icons'
+import { faChartPie } from "@fortawesome/free-solid-svg-icons"
+import { faCaretDown } from "@fortawesome/free-solid-svg-icons"
 /* add icons to the library */
 library.add(faFaceSadTear, faFaceFrown, faFaceMeh, faFaceSmileBeam, faFaceLaughBeam, faPenToSquare, faMagnifyingGlassChart,
-    faChartLine, faChartColumn, faHeartPulse)
+    faChartLine, faChartColumn, faHeartPulse, faChartPie, faCaretDown)
 
 const app = createApp(App);
 app.use(router)

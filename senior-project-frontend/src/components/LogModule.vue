@@ -1,6 +1,6 @@
 <template>
     <el-row :gutter="0">
-        <el-col :span="2">
+        <el-col :span="3">
             <div>
             <el-col>
                 <el-menu
@@ -22,11 +22,15 @@
                         <el-menu-item-group>
                             <el-menu-item @click="openMonthlyMood" index="2-1">
                                 <font-awesome-icon icon="fa-solid fa-chart-line" style="font-size: 1.7em; margin-right: 10px" />
-                                <span>Monthly Mood</span>
+                                <span>Mood Map</span>
                             </el-menu-item>
-                            <el-menu-item index="2-2">
+                            <el-menu-item @click="openMoodPie" index="2-3">
+                                <font-awesome-icon icon="fa-solid fa-chart-pie" style="font-size: 1.7em; margin-right: 10px" />
+                                <span>Mood Pie</span>
+                            </el-menu-item>
+                            <el-menu-item @click="openActivityMoodMap" index="2-2">
                                 <font-awesome-icon icon="fa-solid fa-chart-column" style="font-size: 1.7em; margin-right: 10px" />
-                                <span>Histogram</span>
+                                <span>Activity Map</span>
                             </el-menu-item>
                         </el-menu-item-group>
                     </el-sub-menu>
@@ -34,26 +38,30 @@
             </el-col>
             </div>
         </el-col>
-        <el-col :span="22">
+        <el-col :span="20">
             <DailyLogRecord v-if="show == 'dailyLogRecord'" />
-            <ChartLibrary v-else-if="show == 'monthly mood'" />
+            <MonthlyMood v-else-if="show == 'monthly mood'" />
+            <MoodPie v-else-if="show == 'mood pie'" />
+            <ActivityMap v-else-if="show == 'activity mood map'" />
         </el-col>
         
     </el-row>
 </template>
 
 <script>
-//import SideBar from "./SideBar.vue"
-//import DailyLog from "./DailyLog.vue";
 import DailyLogRecord from "./DailyLogRecord.vue";
-import ChartLibrary from "./ChartLibrary.vue";
+import MonthlyMood from "./MonthlyMood.vue";
+import MoodPie from './MoodPie.vue';
+import ActivityMap from "./ActivityMap.vue";
 import { ElLoading } from 'element-plus';
 
 export default {
     name : 'LogModule',
     components: {
         DailyLogRecord,
-        ChartLibrary
+        MonthlyMood,
+        MoodPie,
+        ActivityMap,
     },
     data() {
         return {
@@ -66,6 +74,12 @@ export default {
         },
         async openMonthlyMood() {
             await this.loadingItem('monthly mood');
+        },
+        async openMoodPie() {
+            await this.loadingItem('mood pie');
+        },
+        async openActivityMoodMap() {
+            await this.loadingItem('activity mood map')
         },
         async loadingItem(name) {
             const loadingInstance = ElLoading.service({

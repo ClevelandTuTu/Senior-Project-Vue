@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div id="coloring-book" ref="coloringBook" 
+        <div id="coloring-book" ref="coloringBook" :style="{ 'background-image': 'url(' + backgroundImage + ')' }"
         @mousedown="coloringBookMouseDown" @mouseup="coloringBookMouseUp" @mousemove="coloringBookMouseMove">
             <!-- Coloring book canvas goes here -->
         </div>
@@ -13,6 +13,7 @@
             <button @click="setColor('#ff00ff')" class="color" style="background-color: #ff00ff;"></button>
             <button @click="setColor('#00ffff')" class="color" style="background-color: #00ffff;"></button>
             <button @click="clearCanvas()">Clear Canvas</button>
+            <button style="margin-left: 20px;">Change Picture</button>
         </div>
     </div>
 </template>
@@ -24,7 +25,8 @@ export default {
             coloringBook: this.$refs.coloringBook,
             colorPalette: this.$refs.colorPalette,
             selectedColor: '#ff0000',
-            isDrawing: false
+            isDrawing: false,
+            backgroundImage: require('../assets/Coloring-Page-1.jpg'), // Initial background image path
         };
     },
     methods: {
@@ -44,8 +46,8 @@ export default {
             if (!this.isDrawing) return;
 
             const rect = coloringBook.getBoundingClientRect();
-            const x = clientX - rect.left;
-            const y = clientY - rect.top;
+            const x = clientX - rect.left + 200;
+            const y = clientY - rect.top + 160;
 
             const dot = document.createElement('div');
             dot.style.position = 'absolute';
@@ -75,23 +77,25 @@ export default {
 
 <style scoped>
 #coloring-book {
-width: 600px;
-height: 400px;
-border: 1px solid #000;
-/* background-image: url('../assets/coloring-page.jpg'); */
-background-size: cover;
+    margin-left: 200px;
+    margin-top: 100px;
+    width: 1500px;
+    height: 800px;
+    border: 1px solid #000;
+    /* background-image: url('../assets/coloring-page.jpg'); */
+    background-size: cover;
 }
 
 #color-palette {
-display: flex;
-justify-content: center;
+    display: flex;
+    justify-content: center;
 }
 
 .color {
-width: 30px;
-height: 30px;
-margin: 5px;
-cursor: pointer;
+    width: 30px;
+    height: 30px;
+    margin: 5px;
+    cursor: pointer;
 }
 
 /* Add styles for more colors and buttons as needed */
