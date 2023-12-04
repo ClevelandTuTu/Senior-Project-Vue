@@ -338,7 +338,7 @@ export default {
             console.log(entry)
             
             if (this.update == false) {
-                axios.post("http://localhost:8080/entry/insertEntry", entry)
+                axios.post("http://70.42.212.64:8080/entry/insertEntry", entry)
                 .then(res => {
                     console.log(res)
                 })
@@ -349,12 +349,12 @@ export default {
             else {
                 console.log("updating")
                 // first delete the old record
-                const request = 'http://localhost:8080/entry/deleteEntry/' + userID + '/' + this.date;
+                const request = 'http://70.42.212.64:8080/entry/deleteEntry/' + userID + '/' + this.date;
                 console.log(request);
                 await axios.delete(request);
 
                 // then insert
-                axios.post("http://localhost:8080/entry/insertEntry", entry)
+                axios.post("http://70.42.212.64:8080/entry/insertEntry", entry)
                 .then(res => {
                     console.log(res)
                 })

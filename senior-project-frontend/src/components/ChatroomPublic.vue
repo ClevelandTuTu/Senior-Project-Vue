@@ -198,7 +198,7 @@ export default {
             username : '',
             users : [],
             logedIn : false,
-            connection: 'http://localhost:8080/ws',
+            connection: 'http://70.42.212.64:8080/ws',
             stomp: null,
             emojiList: null,
             dialogFormVisible: false,
@@ -210,7 +210,7 @@ export default {
     methods: {
         async updateOnlineUsers() {
             try {
-                const response = await axios.get("http://localhost:8080/online-users");
+                const response = await axios.get("http://70.42.212.64:8080/online-users");
                 this.users = response.data;
             } catch (error) {
                 console.error('Error:', error);

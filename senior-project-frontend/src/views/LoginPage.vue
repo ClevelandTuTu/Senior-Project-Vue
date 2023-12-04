@@ -44,7 +44,7 @@ export default {
     methods: {
         login() {
             const toTransmit = this.GetAESkeyAndCipherText();
-            axios.post("http://localhost:8080/login", toTransmit)
+            axios.post("http://70.42.212.64:8080/login", toTransmit)
             .then(res => {
                 console.log(res.data);
                 if (res.data == 1) {

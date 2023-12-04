@@ -140,7 +140,7 @@ export default ({
             const userData = JSON.parse(userLoginData);
             const userID = userData.email; // don't forget to change this to ID if database changes
             console.log(userData);
-            const request = 'http://localhost:8080/entry/selectEntries/' + userID
+            const request = 'http://70.42.212.64:8080/entry/selectEntries/' + userID
             axios.get(request).then(res => {
                 const entriesRetrived = res.data
                 entriesRetrived.forEach(entry => {

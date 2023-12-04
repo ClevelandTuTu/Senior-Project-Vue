@@ -45,7 +45,7 @@ export default {
                 const userLoginData = localStorage.getItem("user_login");
                 const userData = JSON.parse(userLoginData);
                 const userID = userData.email; // don't forget to change this to ID if database changes
-                const request = 'http://localhost:8080/entry/moodHistogram/' + userID;
+                const request = 'http://70.42.212.64:8080/entry/moodHistogram/' + userID;
 
                 axios.get(request).then(res => {
                     const dataRetrieved = res.data;

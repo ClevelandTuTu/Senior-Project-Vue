@@ -61,7 +61,7 @@ export default {
     methods: {
         reset() {
             const toTransmit = this.GetAESkeyAndCipherText();
-            axios.post("http://localhost:8080/reset", toTransmit)
+            axios.post("http://70.42.212.64:8080/reset", toTransmit)
             .then(res => {
                 console.log(res.data);
                 if (res.data == 1) {
@@ -95,7 +95,7 @@ export default {
             }
         },
         SendCode() {
-            axios.get("http://localhost:8080/sendResetEmail/" + this.user.email.trim())
+            axios.get("http://70.42.212.64:8080/sendResetEmail/" + this.user.email.trim())
             .then(res => {
                 console.log(res.data);
                 if (res.data == 1) {
@@ -143,7 +143,7 @@ export default {
                 expiredDate: formattedDate
             };
             console.log(verification)
-            axios.post("http://localhost:8080/verify", verification)
+            axios.post("http://70.42.212.64:8080/verify", verification)
             .then(res => {
                 if (res.data == 1) {
                     ElMessage({

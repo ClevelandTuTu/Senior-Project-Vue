@@ -77,7 +77,7 @@ export default {
     methods: {
         register() {
             const toTransmit = this.GetAESkeyAndCipherText(1);
-            axios.post("http://localhost:8080/register", toTransmit)
+            axios.post("http://70.42.212.64:8080/register", toTransmit)
             .then(res => {
                 console.log(res.data);
                 if (res.data == 1) {
@@ -109,7 +109,7 @@ export default {
             }
         },
         SendCode() {
-            axios.get("http://localhost:8080/sendRegEmail/" + this.user.email.trim())
+            axios.get("http://70.42.212.64:8080/sendRegEmail/" + this.user.email.trim())
             .then(res => {
                 console.log(res.data);
                 if (res.data == 1) {
@@ -157,7 +157,7 @@ export default {
                 expiredDate: formattedDate
             };
             console.log(verification)
-            axios.post("http://localhost:8080/verify", verification)
+            axios.post("http://70.42.212.64:8080/verify", verification)
             .then(res => {
                 if (res.data == 1) {
                     ElMessage({
