@@ -13,7 +13,6 @@
             <button @click="setColor('#ff00ff')" class="color" style="background-color: #ff00ff;"></button>
             <button @click="setColor('#00ffff')" class="color" style="background-color: #00ffff;"></button>
             <button @click="clearCanvas()">Clear Canvas</button>
-            <button style="margin-left: 20px;">Change Picture</button>
         </div>
     </div>
 </template>

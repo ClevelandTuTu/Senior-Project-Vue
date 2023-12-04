@@ -1,24 +1,24 @@
 <template>
     <div class="container">
-    <div id="mainbox" class="mainbox" ref="mainbox">
-		<div id="box" class="box" ref="box">
-			<div class="box1">
-				<span class="span1"><b>Compliment</b></span>
-				<span class="span2"><b>Compliment 2</b></span>
-				<span class="span3"><b>Compliment 3</b></span>
-				<span class="span4"><b>Compliment 4</b></span>
-			</div>
-			<div class="box2">
-				<span class="span1"><b>Compliment 5</b></span>
-				<span class="span2"><b>Compliment 6</b></span>
-				<span class="span3"><b>Compliment 7</b></span>
-				<span class="span4"><b>Compliment 8</b></span>
-			</div>
-		</div>
+      <div id="mainbox" class="mainbox" ref="mainbox">
+        <div id="box" class="box" ref="box">
+          <div class="box1">
+            <span class="span1"><b>You're brilliant!</b></span>
+            <span class="span2"><b>Love your style!</b></span>
+            <span class="span3"><b>You're amazing!</b></span>
+            <span class="span4"><b>You're worth it!</b></span>
+          </div>
+          <div class="box2">
+            <span class="span1"><b>You're an inspiration!</b></span>
+            <span class="span2"><b>You're exceptional!</b></span>
+            <span class="span3"><b>Heart of gold!</b></span>
+            <span class="span4"><b>You're creative!</b></span>
+          </div>
+        </div>
 
-		<button class="spin" @click="myfunction()">SPIN</button>
-	</div>
-</div>
+        <button class="spin" @click="myfunction()">SPIN</button>
+      </div>
+    </div>
 </template>
 
 <script>

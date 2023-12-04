@@ -15,7 +15,7 @@
             <template #title>Game Space</template>
             <el-menu-item @click="toSpinTheWheel" index="3-1">Spin The Wheel</el-menu-item>
             <el-menu-item @click="toColoringBook" index="3-2">Coloring Book</el-menu-item>
-            <el-menu-item index="3-3">New Game Developing</el-menu-item>
+            <el-menu-item @click="toFlowerGarden" index="3-3">Flower Garden</el-menu-item>
             </el-sub-menu>
             <el-menu-item @click="toLogOut" index="4">Log Out</el-menu-item>
             <el-menu-item index="5">New Feature Developing</el-menu-item>
@@ -25,6 +25,8 @@
         <ChatroomPublic v-else-if="show == 2" @leaveRoom="toMoodLog" />
         <SpinTheWheel v-else-if="show == 3.1" />
         <ColoringBook v-else-if="show == 3.2" />
+        <FlowerGarden v-else-if="show == 3.3" />
+        
     </div>
 </template>
 
@@ -34,6 +36,7 @@ import LogModule from '../components/LogModule.vue';
 import ChatroomPublic from '@/components/ChatroomPublic.vue';
 import SpinTheWheel from '@/components/SpinTheWheel.vue';
 import ColoringBook from '@/components/ColoringBook.vue';
+import FlowerGarden from '@/components/FlowerGarden.vue';
 
 export default {
     name: 'App',
@@ -42,6 +45,7 @@ export default {
         ChatroomPublic,
         SpinTheWheel,
         ColoringBook,
+        FlowerGarden,
     },
     data() {
         return {
@@ -60,6 +64,9 @@ export default {
         },
         toColoringBook() {
             this.show = 3.2;
+        },
+        toFlowerGarden() {
+            this.show = 3.3;
         },
         toLogOut() {
             this.$router.push('/');
